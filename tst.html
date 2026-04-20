@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribution System</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+/* COLOR VARIABLES */
+:root{
+    --primary:#2563eb;
+    --secondary:#1e293b;
+    --accent:#22c55e;
+    --light:#f8fafc;
+    --card-bg:rgba(255,255,255,0.85);
+}
+
+/* BODY */
+body{
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+    color:#1e293b;
+}
+
+/* NAVBAR */
+nav{
+    backdrop-filter:blur(10px);
+    background:rgba(0,0,0,0.6);
+    padding:18px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+nav h2{
+    color:#22c55e;
+    font-weight:600;
+}
+
+nav a{
+    color:#f1f5f9;
+    text-decoration:none;
+    margin-left:25px;
+    transition:0.3s;
+    font-weight:500;
+}
+
+nav a:hover{
+    color:var(--primary);
+}
+
+/* SEARCH */
+.search-box{
+    text-align:center;
+    margin:40px 0;
+}
+
+.search-box input{
+    padding:14px;
+    width:350px;
+    border-radius:50px;
+    border:none;
+    outline:none;
+    font-size:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* LAYOUT */
+.container{
+    display:grid;
+    grid-template-columns:3fr 1fr;
+    gap:30px;
+    padding:40px;
+}
+
+/* VENDOR CARD */
+.vendor-card{
+    background:var(--card-bg);
+    backdrop-filter:blur(8px);
+    padding:25px;
+    margin-bottom:25px;
+    border-radius:18px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.25);
+    transition:0.3s ease;
+}
+
+.vendor-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 20px 45px rgba(0,0,0,0.35);
+}
+
+.vendor-card h3{
+    color:var(--primary);
+    font-size:20px;
+}
+
+.stars{
+    color:#facc15;
+    margin:10px 0;
+    font-size:18px;
+}
+
+button{
+    padding:12px 18px;
+    border:none;
+    border-radius:50px;
+    background:linear-gradient(135deg,var(--primary),#1d4ed8);
+    color:white;
+    cursor:pointer;
+    font-weight:500;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 8px 20px rgba(37,99,235,0.5);
+}
+
+/* SIDEBAR */
+aside{
+    background:var(--card-bg);
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.25);
+}
+
+aside h4{
+    margin-bottom:15px;
+    color:var(--primary);
+}
+
+aside ul li{
+    margin-bottom:12px;
+    padding:8px;
+    border-radius:8px;
+    transition:0.3s;
+}
+
+aside ul li:hover{
+    background:rgba(37,99,235,0.1);
+}
+
+/* PRODUCT SECTION */
+.products{
+    padding:50px;
+    background:var(--light);
+    border-radius:30px 30px 0 0;
+}
+
+.products h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:var(--secondary);
+}
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+}
+
+.product{
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.product:hover{
+    transform:translateY(-6px);
+}
+
+/* FOOTER */
+footer{
+    background:#0f172a;
+    color:#94a3b8;
+    text-align:center;
+    padding:25px;
+    margin-top:50px;
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .container{
+        grid-template-columns:1fr;
+    }
+
+    .search-box input{
+        width:90%;
+    }
+}
+</style>
+</head>
+
+<body>
+<script>
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+
+if (!token) {
+  window.location.href = "first.html";
+}
+</script>
+
+<!-- NAVBAR -->
+<nav>
+    <h2>Distribution System</h2>
+    <div>
+        <span style="color:#94a3b8; margin-right:15px;">👤 <span id="nav-username"></span></span>
+        <a href="index.html">Home</a>
+        <a href="">Vendors</a>
+        <a href="products.html">Products</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</nav>
+
+<!-- SEARCH -->
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search vendor..." onkeyup="filterVendors()">
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+<main id="vendorList">
+
+<div class="vendor-card">
+    <h3>Vendor Nairobi</h3>
+    <div class="stars">★★★★★</div>
+    <p>Available 10am - 5pm</p>
+    <button>Select Vendor</button>
+</div>
+
+<div class="vendor-card">
+    <h3>Vendor Mombasa</h3>
+    <div class="stars">★★★★☆</div>
+    <p>Available 24/7</p>
+    <button>Select Vendor</button>
+</div>
+
+<div class="vendor-card">
+    <h3>Vendor Kisumu</h3>
+    <div class="stars">★★★★☆</div>
+    <p>Available 8am - 8pm</p>
+    <button>Select Vendor</button>
+</div>
+
+</main>
+
+<aside>
+    <h4>Other Services</h4>
+    <ul>
+        <li>Food Delivery</li>
+        <li>Drink Delivery</li>
+        <li>Gas Delivery</li>
+        <li>Custom Orders</li>
+    </ul>
+</aside>
+
+</div>
+
+<!-- PRODUCT CATALOG -->
+<section class="products">
+    <h2 style="text-align:center;margin-bottom:20px;">Product Catalog</h2>
+    <div class="product-grid" id="product-grid">
+        <p style="color:#777;">Loading products...</p>
+    </div>
+</section>
+
+<footer>
+    © 2026 Distribution System | Contact: info@company.com | +254 700 000 000
+</footer>
+
+<script>
+document.getElementById("nav-username").textContent = username || "User";
+
+function filterVendors(){
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let cards = document.getElementsByClassName("vendor-card");
+    for(let i=0;i<cards.length;i++){
+        let title = cards[i].getElementsByTagName("h3")[0];
+        if(title.innerHTML.toLowerCase().indexOf(input) > -1){
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
+
+function logout(){
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "first.html";
+}
+
+async function loadProducts(){
+    const grid = document.getElementById("product-grid");
+    try {
+       const response = await fetch("http://localhost:8000/products/", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        const products = await response.json();
+
+        if(products.length === 0){
+            grid.innerHTML = "<p style='color:#777;'>No products available yet.</p>";
+            return;
+        }
+
+        grid.innerHTML = products.map(p => `
+            <div class="product">
+                <h4>${p.name}</h4>
+                <p style="color:#555;font-size:13px;margin:8px 0;">${p.description}</p>
+                <p style="font-weight:700;color:#2563eb;">Ksh ${p.price.toLocaleString()}</p>
+                <button onclick="alert('Order feature coming soon!')">Buy Now</button>
+            </div>
+        `).join("");
+
+    } catch(err){
+        grid.innerHTML = "<p style='color:red;'>Could not load products. Is the backend running?</p>";
+    }
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

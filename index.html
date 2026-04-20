@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Register</title>
+<style>
+body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #fdfbfb, #ebedee); }
+.container { width: 350px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+h2 { text-align: center; margin-bottom: 20px; }
+input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+button { width: 100%; padding: 10px; background: #007BFF; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; }
+button:hover { background: #0056b3; }
+button:disabled { background: #93c5fd; cursor: not-allowed; }
+.toggle { text-align: center; margin-top: 15px; cursor: pointer; color: #007BFF; }
+.error-msg { color: red; font-size: 13px; text-align: center; margin-bottom: 10px; display: none; }
+.success-msg { color: green; font-size: 13px; text-align: center; margin-bottom: 10px; display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2 id="formTitle">Login</h2>
+
+  <div class="error-msg" id="error-msg"></div>
+  <div class="success-msg" id="success-msg"></div>
+
+  <input type="text" id="username" placeholder="Username">
+  <div id="email-field" style="display:none">
+    <input type="email" id="email" placeholder="Email Address">
+  </div>
+  <input type="password" id="password" placeholder="Password">
+  <div id="confirm-field" style="display:none">
+    <input type="password" id="confirm_password" placeholder="Confirm Password">
+  </div>
+
+  <button id="auth-btn" onclick="handleAuth()">Login</button>
+  <div class="toggle" onclick="toggleForm()">Switch to Register</div>
+</div>
+
+<script>
+let isLogin = true;
+
+function toggleForm() {
+  isLogin = !isLogin;
+  document.getElementById("formTitle").innerText = isLogin ? "Login" : "Register";
+  document.getElementById("auth-btn").innerText = isLogin ? "Login" : "Register";
+  document.querySelector(".toggle").innerText = isLogin ? "Switch to Register" : "Switch to Login";
+  document.getElementById("email-field").style.display = isLogin ? "none" : "block";
+  document.getElementById("confirm-field").style.display = isLogin ? "none" : "block";
+  document.getElementById("error-msg").style.display = "none";
+  document.getElementById("success-msg").style.display = "none";
+}
+
+async function handleAuth() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorMsg = document.getElementById("error-msg");
+  const successMsg = document.getElementById("success-msg");
+  const btn = document.getElementById("auth-btn");
+
+  errorMsg.style.display = "none";
+  successMsg.style.display = "none";
+
+  if (!username || !password) {
+    errorMsg.textContent = "Please fill all fields";
+    errorMsg.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Please wait...";
+
+  if (isLogin) {
+    // LOGIN — must send as form data, not JSON
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("username", username);
+        window.location.href = "dashboard.html";
+      } else {
+        if (typeof data.detail === "string") {
+          errorMsg.textContent = data.detail;
+        } else if (Array.isArray(data.detail)) {
+          errorMsg.textContent = data.detail.map(e => e.msg).join(", ");
+        } else {
+          errorMsg.textContent = "Invalid credentials";
+        }
+        errorMsg.style.display = "block";
+      }
+    } catch (err) {
+      errorMsg.textContent = "Cannot connect to server. Is the backend running?";
+      errorMsg.style.display = "block";
+    }
+
+  } else {
+    // REGISTER — JSON is correct here
+    const email = document.getElementById("email").value.trim();
+    const confirmPassword = document.getElementById("confirm_password").value.trim();
+
+    if (!email) {
+      errorMsg.textContent = "Please enter your email";
+      errorMsg.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Register";
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorMsg.textContent = "Passwords do not match";
+      errorMsg.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Register";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        successMsg.textContent = "Account created! You can now login.";
+        successMsg.style.display = "block";
+        toggleForm();
+      } else {
+        if (typeof data.detail === "string") {
+          errorMsg.textContent = data.detail;
+        } else {
+          errorMsg.textContent = "Registration failed. Try a different username or email.";
+        }
+        errorMsg.style.display = "block";
+      }
+    } catch (err) {
+      errorMsg.textContent = "Cannot connect to server. Is the backend running?";
+      errorMsg.style.display = "block";
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = isLogin ? "Login" : "Register";
+}
+</script>
+</body>
+</html>

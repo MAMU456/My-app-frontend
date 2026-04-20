@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | Distribution System</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+body { height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #0f172a, #1e293b); }
+.card { width: 100%; max-width: 400px; padding: 44px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px); animation: fadeIn 0.5s ease; }
+.badge { display: inline-block; background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; }
+h2 { color: #f1f5f9; font-size: 26px; margin-bottom: 6px; }
+p { color: #64748b; font-size: 13px; margin-bottom: 28px; }
+label { font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; display: block; letter-spacing: 0.5px; text-transform: uppercase; }
+input { width: 100%; padding: 12px 14px; margin-bottom: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); color: #f1f5f9; font-size: 14px; outline: none; transition: 0.3s; }
+input::placeholder { color: #475569; }
+input:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+button { width: 100%; padding: 13px; border: none; border-radius: 12px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239,68,68,0.4); }
+button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.error-msg { color: #f87171; font-size: 13px; text-align: center; margin-bottom: 14px; display: none; padding: 10px; background: rgba(239,68,68,0.1); border-radius: 8px; }
+.back { text-align: center; margin-top: 20px; font-size: 13px; color: #475569; }
+.back a { color: #94a3b8; text-decoration: none; }
+.back a:hover { color: #f1f5f9; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="badge">🔐 ADMIN ACCESS</div>
+  <h2>Admin Portal</h2>
+  <p>Restricted area. Authorized personnel only.</p>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <label>Admin Username</label>
+  <input type="text" id="username" placeholder="Enter admin username" autocomplete="off">
+
+  <label>Password</label>
+  <input type="password" id="password" placeholder="Enter password">
+
+  <button id="login-btn" onclick="adminLogin()">Access Admin Panel</button>
+
+  <div class="back"><a href="index.html">← Back to site</a></div>
+</div>
+
+<script>
+// Redirect if already logged in as admin
+if (localStorage.getItem("admin_token")) {
+  window.location.href = "admin-panel.html";
+}
+
+async function adminLogin() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("error-msg");
+  const btn = document.getElementById("login-btn");
+
+  errorMsg.style.display = "none";
+
+  if (!username || !password) {
+    errorMsg.textContent = "Please fill all fields";
+    errorMsg.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Authenticating...";
+
+  try {
+    const response = await fetch("http://localhost:8000/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ username, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("admin_token", data.access_token);
+      localStorage.setItem("admin_username", username);
+      window.location.href = "admin-panel.html";
+    } else {
+      errorMsg.textContent = data.detail || "Invalid admin credentials";
+      errorMsg.style.display = "block";
+    }
+  } catch (err) {
+    errorMsg.textContent = "Could not connect to server.";
+    errorMsg.style.display = "block";
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Access Admin Panel";
+}
+</script>
+</body>
+</html>

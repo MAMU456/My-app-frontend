@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | Distribution System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+:root{
+  --red:#ef4444; --red-dark:#dc2626;
+  --green:#22c55e; --blue:#2563eb;
+  --bg:#0f172a; --surface:#1e293b;
+  --card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+  --text:#f1f5f9; --muted:#64748b;
+}
+body{ background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed; top:0; left:0; width:240px; height:100vh;
+  background:var(--surface); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; z-index:50;
+}
+.sidebar-brand{
+  padding:24px 20px; border-bottom:1px solid var(--border);
+}
+.sidebar-brand h2{ font-family:'Syne',sans-serif; font-size:16px; color:var(--red); }
+.sidebar-brand p{ font-size:11px; color:var(--muted); margin-top:3px; }
+.sidebar-nav{ padding:16px 12px; flex:1; }
+.nav-item{
+  display:flex; align-items:center; gap:10px;
+  padding:11px 14px; border-radius:10px;
+  color:#94a3b8; font-size:14px; font-weight:500;
+  cursor:pointer; transition:0.2s; margin-bottom:4px;
+  border:none; background:none; width:100%; text-align:left;
+}
+.nav-item:hover{ background:rgba(255,255,255,0.05); color:var(--text); }
+.nav-item.active{ background:rgba(239,68,68,0.12); color:var(--red); }
+.sidebar-footer{
+  padding:16px 12px; border-top:1px solid var(--border);
+}
+.admin-badge{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; background:rgba(239,68,68,0.08);
+  border-radius:10px; margin-bottom:10px;
+}
+.admin-badge .avatar{
+  width:32px; height:32px; background:var(--red);
+  border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:14px; font-weight:700;
+  color:white; font-family:'Syne',sans-serif;
+}
+.admin-badge .info p{ font-size:13px; font-weight:600; }
+.admin-badge .info span{ font-size:11px; color:var(--muted); }
+.logout-btn{
+  width:100%; padding:10px; border:1px solid var(--border);
+  background:none; color:#94a3b8; border-radius:10px;
+  font-size:13px; cursor:pointer; transition:0.2s; font-family:'DM Sans',sans-serif;
+}
+.logout-btn:hover{ background:rgba(239,68,68,0.1); color:var(--red); border-color:var(--red); }
+
+/* MAIN */
+.main{ margin-left:240px; padding:32px; min-height:100vh; }
+
+/* TABS */
+.tab{ display:none; }
+.tab.active{ display:block; }
+
+/* PAGE TITLE */
+.page-title{ font-family:'Syne',sans-serif; font-size:26px; font-weight:800; margin-bottom:6px; }
+.page-sub{ color:var(--muted); font-size:14px; margin-bottom:28px; }
+
+/* STATS */
+.stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+.stat-card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:20px;
+}
+.stat-card .label{ font-size:12px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
+.stat-card .value{ font-family:'Syne',sans-serif; font-size:30px; font-weight:800; }
+.stat-card .value.red{ color:var(--red); }
+.stat-card .value.green{ color:var(--green); }
+.stat-card .value.blue{ color:var(--blue); }
+.stat-card .value.white{ color:var(--text); }
+
+/* SECTION CARD */
+.section-card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:24px; margin-bottom:24px;
+}
+.section-card h3{ font-family:'Syne',sans-serif; font-size:17px; margin-bottom:20px; }
+
+/* FORM */
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-group{ display:flex; flex-direction:column; gap:6px; }
+.form-group.full{ grid-column:1/-1; }
+.form-group label{ font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.form-group input, .form-group textarea{
+  padding:11px 14px; border-radius:10px;
+  border:1px solid var(--border); background:rgba(255,255,255,0.05);
+  color:var(--text); font-size:14px; font-family:'DM Sans',sans-serif;
+  outline:none; transition:0.3s;
+}
+.form-group input:focus, .form-group textarea:focus{
+  border-color:var(--red); box-shadow:0 0 0 3px rgba(239,68,68,0.12);
+}
+.form-group textarea{ resize:vertical; min-height:80px; }
+.btn{ padding:11px 22px; border:none; border-radius:10px; font-size:13px; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:0.2s; }
+.btn-primary{ background:linear-gradient(135deg,var(--red),var(--red-dark)); color:white; }
+.btn-primary:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(239,68,68,0.35); }
+.btn-success{ background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.btn-success:hover{ background:rgba(34,197,94,0.25); }
+.btn-danger{ background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.25); }
+.btn-danger:hover{ background:rgba(239,68,68,0.22); }
+.btn-ghost{ background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid var(--border); }
+.btn-ghost:hover{ background:rgba(255,255,255,0.1); }
+.btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* TABLE */
+.table-wrap{ overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; }
+th{ text-align:left; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; padding:10px 14px; border-bottom:1px solid var(--border); }
+td{ padding:14px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:14px; }
+tr:last-child td{ border-bottom:none; }
+tr:hover td{ background:rgba(255,255,255,0.02); }
+.badge-active{ display:inline-block; padding:3px 10px; border-radius:50px; font-size:11px; font-weight:600; background:rgba(34,197,94,0.12); color:var(--green); border:1px solid rgba(34,197,94,0.25); }
+.badge-revoked{ display:inline-block; padding:3px 10px; border-radius:50px; font-size:11px; font-weight:600; background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+.actions{ display:flex; gap:8px; }
+
+/* TOAST */
+.toast{
+  position:fixed; bottom:28px; right:28px;
+  padding:13px 20px; border-radius:12px;
+  font-size:14px; font-weight:600;
+  transform:translateY(80px); opacity:0;
+  transition:0.4s cubic-bezier(0.34,1.56,0.64,1); z-index:999;
+}
+.toast.show{ transform:translateY(0); opacity:1; }
+.toast.success{ background:#22c55e; color:white; box-shadow:0 8px 24px rgba(34,197,94,0.4); }
+.toast.error{ background:#ef4444; color:white; box-shadow:0 8px 24px rgba(239,68,68,0.4); }
+
+/* MODAL */
+.modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:200; display:none; align-items:center; justify-content:center; }
+.modal-overlay.open{ display:flex; }
+.modal{ background:#1e293b; border:1px solid var(--border); border-radius:20px; padding:32px; width:100%; max-width:460px; animation:scaleIn 0.3s ease; }
+.modal h3{ font-family:'Syne',sans-serif; font-size:19px; margin-bottom:20px; }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+@keyframes scaleIn{ from{ opacity:0; transform:scale(0.93); } to{ opacity:1; transform:scale(1); } }
+
+/* EMPTY */
+.empty{ text-align:center; padding:50px; color:var(--muted); }
+.empty .icon{ font-size:40px; margin-bottom:12px; }
+
+@media(max-width:768px){
+  .sidebar{ width:100%; height:auto; position:relative; }
+  .main{ margin-left:0; padding:20px; }
+  .stats-grid{ grid-template-columns:1fr 1fr; }
+  .form-grid{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Auth check -->
+<script>
+const adminToken = localStorage.getItem("admin_token");
+const adminUsername = localStorage.getItem("admin_username");
+if (!adminToken) window.location.href = "admin-login.html";
+</script>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <h2>⚙ Admin Panel</h2>
+    <p>Distribution System</p>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showTab('dashboard')">&#128202; Dashboard</button>
+    <button class="nav-item" onclick="showTab('products')">&#128230; Products</button>
+    <button class="nav-item" onclick="showTab('vendors')">&#127968; Vendors</button>
+    <button class="nav-item" onclick="showTab('users')">&#128101; Users</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-badge">
+      <div class="avatar" id="admin-initial">A</div>
+      <div class="info">
+        <p id="admin-name">Admin</p>
+        <span>Administrator</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- DASHBOARD TAB -->
+  <div class="tab active" id="tab-dashboard">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Welcome back, <span id="dash-admin-name"></span></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="label">Total Users</div><div class="value blue" id="stat-total-users">—</div></div>
+      <div class="stat-card"><div class="label">Active Users</div><div class="value green" id="stat-active-users">—</div></div>
+      <div class="stat-card"><div class="label">Revoked Users</div><div class="value red" id="stat-revoked-users">—</div></div>
+      <div class="stat-card"><div class="label">Total Products</div><div class="value white" id="stat-products">—</div></div>
+    </div>
+    <div class="section-card">
+      <h3>Quick Actions</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="showTab('products')">➕ Add Product</button>
+        <button class="btn btn-ghost" onclick="showTab('users')">👥 Manage Users</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS TAB -->
+  <div class="tab" id="tab-products">
+    <div class="page-title">Products</div>
+    <div class="page-sub">Add, edit and delete products visible to users</div>
+
+    <!-- Add Product Form -->
+    <div class="section-card">
+      <h3 id="form-title">➕ Add New Product</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="p-name" placeholder="e.g. Mineral Water 500ml">
+        </div>
+        <div class="form-group">
+          <label>Price (Ksh)</label>
+          <input type="number" id="p-price" placeholder="e.g. 50">
+        </div>
+        <div class="form-group full">
+          <label>Description</label>
+          <textarea id="p-desc" placeholder="Brief product description..."></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-primary" id="save-product-btn" onclick="saveProduct()">Save Product</button>
+        <button class="btn btn-ghost" id="cancel-edit-btn" onclick="cancelEdit()" style="display:none">Cancel Edit</button>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="section-card">
+      <h3>All Products</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Description</th><th>Price</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr><td colspan="5"><div class="empty"><div class="icon">📦</div>Loading products...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div class="tab" id="tab-users">
+    <div class="page-title">Users</div>
+    <div class="page-sub">View and manage user accounts</div>
+    <div class="section-card">
+      <h3>All Users</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Username</th><th>Email</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="5"><div class="empty"><div class="icon">&#128101;</div>Loading users...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VENDORS TAB -->
+  <div class="tab" id="tab-vendors">
+    <div class="page-title">Vendors</div>
+    <div class="page-sub">Add, edit and remove vendors from the platform</div>
+
+    <div class="section-card">
+      <h3 id="vendor-form-title">Add New Vendor</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Vendor Name</label>
+          <input type="text" id="v-name" placeholder="e.g. Vendor Nairobi">
+        </div>
+        <div class="form-group">
+          <label>Initials (2 letters)</label>
+          <input type="text" id="v-initials" placeholder="e.g. NB" maxlength="2">
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="v-location" placeholder="e.g. Nairobi CBD">
+        </div>
+        <div class="form-group">
+          <label>Hours</label>
+          <input type="text" id="v-hours" placeholder="e.g. 8am - 5pm">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="v-phone" placeholder="e.g. +254 711 000 001">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="v-email" placeholder="e.g. nairobi@distrib.co.ke">
+        </div>
+        <div class="form-group">
+          <label>Rating (1-5)</label>
+          <input type="number" id="v-rating" placeholder="e.g. 4.5" min="1" max="5" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="v-status" style="padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;">
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button class="btn btn-primary" id="save-vendor-btn" onclick="saveVendor()">Save Vendor</button>
+        <button class="btn btn-ghost" id="cancel-vendor-btn" onclick="cancelVendorEdit()" style="display:none">Cancel Edit</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>All Vendors</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Location</th><th>Hours</th><th>Rating</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="vendors-tbody">
+            <tr><td colspan="7"><div class="empty"><div class="icon">&#127968;</div>Loading vendors...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "http://localhost:8000";
+const headers = () => ({
+  "Authorization": "Bearer " + adminToken,
+  "Content-Type": "application/json"
+});
+
+let editingProductId = null;
+
+// Init
+document.getElementById("admin-name").textContent = adminUsername || "Admin";
+document.getElementById("admin-initial").textContent = (adminUsername || "A")[0].toUpperCase();
+document.getElementById("dash-admin-name").textContent = adminUsername || "Admin";
+
+// ── TAB NAVIGATION ──
+function showTab(name) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  const tabs = ["dashboard","products","vendors","users"];
+  document.querySelectorAll(".nav-item")[tabs.indexOf(name)].classList.add("active");
+
+  if (name === "dashboard") loadStats();
+  if (name === "products") loadProducts();
+  if (name === "vendors") loadVendors();
+  if (name === "users") loadUsers();
+}
+
+// ── TOAST ──
+function showToast(msg, type = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+// ── STATS ──
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/admin/stats`, { headers: headers() });
+    const data = await res.json();
+    document.getElementById("stat-total-users").textContent = data.total_users;
+    document.getElementById("stat-active-users").textContent = data.active_users;
+    document.getElementById("stat-revoked-users").textContent = data.revoked_users;
+    document.getElementById("stat-products").textContent = data.total_products;
+  } catch { showToast("Could not load stats", "error"); }
+}
+
+// ── PRODUCTS ──
+async function loadProducts() {
+  try {
+    const res = await fetch(`${API}/products/`);
+    const products = await res.json();
+    const tbody = document.getElementById("products-tbody");
+
+    if (products.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="icon">📦</div>No products yet. Add one above!</div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = products.map(p => `
+      <tr>
+        <td style="color:var(--muted)">#${p.id}</td>
+        <td style="font-weight:600">${p.name}</td>
+        <td style="color:#94a3b8;max-width:200px">${p.description}</td>
+        <td style="color:#22c55e;font-weight:600">Ksh ${p.price.toLocaleString()}</td>
+        <td>
+          <div class="actions">
+            <button class="btn btn-ghost" onclick="editProduct(${p.id}, '${escapeQ(p.name)}', '${escapeQ(p.description)}', ${p.price})">✏️ Edit</button>
+            <button class="btn btn-danger" onclick="deleteProduct(${p.id}, '${escapeQ(p.name)}')">🗑 Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  } catch { showToast("Could not load products", "error"); }
+}
+
+function escapeQ(str) { return String(str).replace(/'/g, "\\'"); }
+
+async function saveProduct() {
+  const name = document.getElementById("p-name").value.trim();
+  const description = document.getElementById("p-desc").value.trim();
+  const price = parseFloat(document.getElementById("p-price").value);
+
+  if (!name || !description || isNaN(price)) {
+    showToast("Please fill all fields", "error"); return;
+  }
+
+  const btn = document.getElementById("save-product-btn");
+  btn.disabled = true; btn.textContent = "Saving...";
+
+  const isEdit = editingProductId !== null;
+  const url = isEdit ? `${API}/admin/products/${editingProductId}` : `${API}/admin/products`;
+  const method = isEdit ? "PUT" : "POST";
+
+  try {
+    const res = await fetch(url, {
+      method, headers: headers(),
+      body: JSON.stringify({ name, description, price })
+    });
+
+    if (res.ok) {
+      showToast(isEdit ? "Product updated!" : "Product added!");
+      cancelEdit();
+      loadProducts();
+      loadStats();
+    } else {
+      const data = await res.json();
+      showToast(data.detail || "Error saving product", "error");
+    }
+  } catch { showToast("Connection error", "error"); }
+
+  btn.disabled = false;
+  btn.textContent = "Save Product";
+}
+
+function editProduct(id, name, description, price) {
+  editingProductId = id;
+  document.getElementById("p-name").value = name;
+  document.getElementById("p-desc").value = description;
+  document.getElementById("p-price").value = price;
+  document.getElementById("form-title").textContent = `✏️ Edit Product #${id}`;
+  document.getElementById("save-product-btn").textContent = "Update Product";
+  document.getElementById("cancel-edit-btn").style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function cancelEdit() {
+  editingProductId = null;
+  document.getElementById("p-name").value = "";
+  document.getElementById("p-desc").value = "";
+  document.getElementById("p-price").value = "";
+  document.getElementById("form-title").textContent = "➕ Add New Product";
+  document.getElementById("save-product-btn").textContent = "Save Product";
+  document.getElementById("cancel-edit-btn").style.display = "none";
+}
+
+async function deleteProduct(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API}/admin/products/${id}`, {
+      method: "DELETE", headers: headers()
+    });
+    if (res.ok) { showToast("Product deleted"); loadProducts(); loadStats(); }
+    else showToast("Could not delete product", "error");
+  } catch { showToast("Connection error", "error"); }
+}
+
+// ── USERS ──
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API}/admin/users`, { headers: headers() });
+    const users = await res.json();
+    const tbody = document.getElementById("users-tbody");
+
+    if (users.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="icon">👥</div>No users registered yet.</div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td style="color:var(--muted)">#${u.id}</td>
+        <td style="font-weight:600">${u.username}</td>
+        <td style="color:#94a3b8">${u.email}</td>
+        <td><span class="${u.is_active ? 'badge-active' : 'badge-revoked'}">${u.is_active ? 'Active' : 'Revoked'}</span></td>
+        <td>
+          <div class="actions">
+            ${u.is_active
+              ? `<button class="btn btn-danger" onclick="revokeUser(${u.id}, '${u.username}')">🚫 Revoke</button>`
+              : `<button class="btn btn-success" onclick="restoreUser(${u.id}, '${u.username}')">✅ Restore</button>`
+            }
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  } catch { showToast("Could not load users", "error"); }
+}
+
+async function revokeUser(id, username) {
+  if (!confirm(`Revoke access for "${username}"? They will not be able to login.`)) return;
+  try {
+    const res = await fetch(`${API}/admin/users/${id}/revoke`, {
+      method: "PATCH", headers: headers()
+    });
+    if (res.ok) { showToast(`${username} has been revoked`); loadUsers(); loadStats(); }
+    else showToast("Could not revoke user", "error");
+  } catch { showToast("Connection error", "error"); }
+}
+
+async function restoreUser(id, username) {
+  try {
+    const res = await fetch(`${API}/admin/users/${id}/restore`, {
+      method: "PATCH", headers: headers()
+    });
+    if (res.ok) { showToast(`${username} has been restored`, "success"); loadUsers(); loadStats(); }
+    else showToast("Could not restore user", "error");
+  } catch { showToast("Connection error", "error"); }
+}
+
+// ── VENDORS ──
+let editingVendorId = null;
+
+async function loadVendors() {
+  try {
+    const res = await fetch(`${API}/admin/vendors`, { headers: headers() });
+    const vendors = await res.json();
+    const tbody = document.getElementById("vendors-tbody");
+
+    if (vendors.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="icon">&#127968;</div>No vendors yet. Add one above!</div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = vendors.map(v => `
+      <tr>
+        <td style="color:var(--muted)">#${v.id}</td>
+        <td style="font-weight:600">${v.name}</td>
+        <td style="color:#94a3b8">${v.location}</td>
+        <td style="color:#94a3b8">${v.hours}</td>
+        <td style="color:#facc15">${v.rating} &#9733;</td>
+        <td><span class="${v.status === 'open' ? 'badge-active' : 'badge-revoked'}">${v.status === 'open' ? 'Open' : 'Closed'}</span></td>
+        <td>
+          <div class="actions">
+            <button class="btn btn-ghost" onclick="editVendor(${v.id}, '${esc(v.name)}', '${esc(v.location)}', '${esc(v.hours)}', '${esc(v.phone)}', '${esc(v.email)}', ${v.rating}, '${v.status}', '${esc(v.initials)}')">Edit</button>
+            <button class="btn btn-danger" onclick="deleteVendor(${v.id}, '${esc(v.name)}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  } catch { showToast("Could not load vendors", "error"); }
+}
+
+function esc(str) { return String(str).replace(/'/g, "\\'"); }
+
+async function saveVendor() {
+  const name = document.getElementById("v-name").value.trim();
+  const location = document.getElementById("v-location").value.trim();
+  const hours = document.getElementById("v-hours").value.trim();
+  const phone = document.getElementById("v-phone").value.trim();
+  const email = document.getElementById("v-email").value.trim();
+  const rating = parseFloat(document.getElementById("v-rating").value);
+  const status = document.getElementById("v-status").value;
+  const initials = document.getElementById("v-initials").value.trim().toUpperCase();
+
+  if (!name || !location || !hours || !phone || !email || isNaN(rating) || !initials) {
+    showToast("Please fill all fields", "error"); return;
+  }
+
+  const btn = document.getElementById("save-vendor-btn");
+  btn.disabled = true; btn.textContent = "Saving...";
+
+  const isEdit = editingVendorId !== null;
+  const url = isEdit ? `${API}/admin/vendors/${editingVendorId}` : `${API}/admin/vendors`;
+  const method = isEdit ? "PUT" : "POST";
+
+  try {
+    const res = await fetch(url, {
+      method, headers: headers(),
+      body: JSON.stringify({ name, location, hours, phone, email, rating, status, initials })
+    });
+    if (res.ok) {
+      showToast(isEdit ? "Vendor updated!" : "Vendor added!");
+      cancelVendorEdit();
+      loadVendors();
+      loadStats();
+    } else {
+      const data = await res.json();
+      showToast(data.detail || "Error saving vendor", "error");
+    }
+  } catch { showToast("Connection error", "error"); }
+
+  btn.disabled = false;
+  btn.textContent = "Save Vendor";
+}
+
+function editVendor(id, name, location, hours, phone, email, rating, status, initials) {
+  editingVendorId = id;
+  document.getElementById("v-name").value = name;
+  document.getElementById("v-location").value = location;
+  document.getElementById("v-hours").value = hours;
+  document.getElementById("v-phone").value = phone;
+  document.getElementById("v-email").value = email;
+  document.getElementById("v-rating").value = rating;
+  document.getElementById("v-status").value = status;
+  document.getElementById("v-initials").value = initials;
+  document.getElementById("vendor-form-title").textContent = `Edit Vendor #${id}`;
+  document.getElementById("save-vendor-btn").textContent = "Update Vendor";
+  document.getElementById("cancel-vendor-btn").style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function cancelVendorEdit() {
+  editingVendorId = null;
+  ["v-name","v-location","v-hours","v-phone","v-email","v-rating","v-initials"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("v-status").value = "open";
+  document.getElementById("vendor-form-title").textContent = "Add New Vendor";
+  document.getElementById("save-vendor-btn").textContent = "Save Vendor";
+  document.getElementById("cancel-vendor-btn").style.display = "none";
+}
+
+async function deleteVendor(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API}/admin/vendors/${id}`, { method: "DELETE", headers: headers() });
+    if (res.ok) { showToast("Vendor deleted"); loadVendors(); loadStats(); }
+    else showToast("Could not delete vendor", "error");
+  } catch { showToast("Connection error", "error"); }
+}
+
+function logout() {
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("admin_username");
+  window.location.href = "admin-login.html";
+}
+
+// Load initial data
+loadStats();
+</script>
+</body>
+</html>

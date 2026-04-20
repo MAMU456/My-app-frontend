@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | Distribution System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --primary:#2563eb;
+  --accent:#22c55e;
+  --bg:#0f172a;
+  --surface:#1e293b;
+  --card:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --muted-light:#94a3b8;
+}
+
+html{ scroll-behavior:smooth; }
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── NAVBAR ── */
+nav{
+  backdrop-filter:blur(16px);
+  background:rgba(0,0,0,0.45);
+  padding:18px 48px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+  border-bottom:1px solid var(--border);
+}
+
+.nav-brand{
+  font-family:'Syne',sans-serif;
+  font-size:18px;
+  font-weight:800;
+  color:var(--accent);
+  letter-spacing:-0.5px;
+}
+
+.nav-links{ display:flex; align-items:center; gap:6px; }
+
+.nav-links a{
+  color:#94a3b8;
+  text-decoration:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:14px;
+  font-weight:500;
+  transition:0.2s;
+}
+
+.nav-links a:hover{ color:var(--text); background:rgba(255,255,255,0.06); }
+
+.nav-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:7px 14px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  border-radius:50px;
+  font-size:13px;
+  color:var(--muted-light);
+}
+
+.nav-user .dot{
+  width:8px; height:8px;
+  background:var(--accent);
+  border-radius:50%;
+  animation:blink 2s infinite;
+}
+
+/* ── HERO ── */
+.hero{
+  position:relative;
+  padding:90px 48px 70px;
+  overflow:hidden;
+}
+
+/* animated grid background */
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(37,99,235,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.07) 1px, transparent 1px);
+  background-size:48px 48px;
+  animation:gridMove 20s linear infinite;
+  pointer-events:none;
+}
+
+/* glow blobs */
+.hero::after{
+  content:'';
+  position:absolute;
+  top:-100px; right:-100px;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.hero-blob{
+  position:absolute;
+  bottom:-80px; left:-80px;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.hero-content{ position:relative; max-width:700px; }
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.25);
+  color:#22c55e;
+  padding:6px 16px;
+  border-radius:50px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  margin-bottom:24px;
+  animation:fadeUp 0.6s ease both;
+}
+
+.hero-badge .pulse{
+  width:6px; height:6px;
+  background:#22c55e;
+  border-radius:50%;
+  animation:blink 1.5s infinite;
+}
+
+.hero h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(38px, 5vw, 62px);
+  font-weight:900;
+  line-height:1.08;
+  letter-spacing:-2px;
+  margin-bottom:20px;
+  animation:fadeUp 0.6s ease 0.1s both;
+}
+
+.hero h1 .highlight{
+  background:linear-gradient(135deg, #2563eb, #22c55e);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+  font-size:17px;
+  color:var(--muted-light);
+  line-height:1.7;
+  max-width:520px;
+  margin-bottom:36px;
+  animation:fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-actions{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  animation:fadeUp 0.6s ease 0.3s both;
+}
+
+.btn-hero{
+  padding:14px 28px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:0.3s;
+  border:none;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg, #2563eb, #1d4ed8);
+  color:white;
+  box-shadow:0 8px 24px rgba(37,99,235,0.3);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(37,99,235,0.45);
+}
+
+.btn-outline{
+  background:rgba(255,255,255,0.05);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+.btn-outline:hover{
+  background:rgba(255,255,255,0.1);
+  border-color:rgba(255,255,255,0.2);
+}
+
+/* ── STATS ROW ── */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  padding:0 48px 60px;
+  animation:fadeUp 0.6s ease 0.4s both;
+}
+
+.stat-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px 24px;
+  position:relative;
+  overflow:hidden;
+  transition:0.3s;
+}
+
+.stat-card:hover{
+  border-color:rgba(37,99,235,0.3);
+  transform:translateY(-3px);
+}
+
+.stat-card::before{
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+  opacity:0;
+  transition:0.3s;
+}
+
+.stat-card:hover::before{ opacity:1; }
+
+.stat-label{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:10px;
+}
+
+.stat-value{
+  font-family:'Syne',sans-serif;
+  font-size:32px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.stat-value.green{ color:#22c55e; }
+.stat-value.blue{ color:#60a5fa; }
+
+.stat-sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ── SECTION HEADERS ── */
+.section{
+  padding:0 48px 60px;
+}
+
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+}
+
+.section-title{
+  font-family:'Syne',sans-serif;
+  font-size:22px;
+  font-weight:800;
+}
+
+.section-link{
+  font-size:13px;
+  color:var(--primary);
+  text-decoration:none;
+  font-weight:600;
+  transition:0.2s;
+}
+
+.section-link:hover{ color:#60a5fa; }
+
+/* ── VENDOR CARDS ── */
+.vendor-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.vendor-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:24px;
+  transition:0.3s;
+  position:relative;
+  overflow:hidden;
+}
+
+.vendor-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(37,99,235,0.05), transparent);
+  opacity:0;
+  transition:0.3s;
+}
+
+.vendor-card:hover{
+  border-color:rgba(37,99,235,0.35);
+  transform:translateY(-5px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+
+.vendor-card:hover::after{ opacity:1; }
+
+.vendor-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.vendor-avatar{
+  width:46px; height:46px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Syne',sans-serif;
+  font-size:16px;
+  font-weight:800;
+  color:white;
+}
+
+.vendor-open{
+  font-size:11px;
+  font-weight:600;
+  padding:4px 10px;
+  border-radius:50px;
+  background:rgba(34,197,94,0.12);
+  color:#22c55e;
+  border:1px solid rgba(34,197,94,0.25);
+}
+
+.vendor-name{
+  font-family:'Syne',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.vendor-loc{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:12px;
+}
+
+.vendor-stars{
+  color:#facc15;
+  font-size:13px;
+  margin-bottom:16px;
+}
+
+.vendor-btn{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:rgba(37,99,235,0.15);
+  color:#60a5fa;
+  font-size:13px;
+  font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid rgba(37,99,235,0.25);
+}
+
+.vendor-btn:hover{
+  background:rgba(37,99,235,0.25);
+  transform:none;
+  box-shadow:none;
+}
+
+/* ── PRODUCT GRID ── */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:18px;
+}
+
+.product-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px;
+  transition:0.3s;
+}
+
+.product-card:hover{
+  border-color:rgba(34,197,94,0.3);
+  transform:translateY(-4px);
+  box-shadow:0 16px 32px rgba(0,0,0,0.25);
+}
+
+.product-name{
+  font-family:'Syne',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  margin-bottom:6px;
+  color:var(--text);
+}
+
+.product-desc{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:14px;
+  line-height:1.5;
+}
+
+.product-price{
+  font-family:'Syne',sans-serif;
+  font-size:20px;
+  font-weight:800;
+  color:#22c55e;
+  margin-bottom:14px;
+}
+
+.product-btn{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;
+  font-size:13px;
+  font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.product-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(37,99,235,0.4);
+}
+
+.loading-msg{
+  text-align:center;
+  padding:50px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* ── SERVICES STRIP ── */
+.services-strip{
+  padding:0 48px 60px;
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.service-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px 20px;
+  text-align:center;
+  transition:0.3s;
+  cursor:pointer;
+}
+
+.service-card:hover{
+  border-color:rgba(34,197,94,0.3);
+  background:rgba(34,197,94,0.05);
+  transform:translateY(-3px);
+}
+
+.service-icon{
+  width:48px; height:48px;
+  background:rgba(37,99,235,0.12);
+  border:1px solid rgba(37,99,235,0.2);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 14px;
+  font-size:22px;
+}
+
+.service-name{
+  font-family:'Syne',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.service-desc{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:#080f1a;
+  border-top:1px solid var(--border);
+  padding:30px 48px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.footer-brand{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  color:var(--accent);
+  font-size:15px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(20px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+@keyframes blink{
+  0%,100%{ opacity:1; }
+  50%{ opacity:0.3; }
+}
+
+@keyframes gridMove{
+  from{ transform:translateY(0); }
+  to{ transform:translateY(48px); }
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{ padding:15px 20px; }
+  .hero{ padding:60px 20px 40px; }
+  .stats-row{ grid-template-columns:1fr 1fr; padding:0 20px 40px; }
+  .section{ padding:0 20px 40px; }
+  .vendor-grid{ grid-template-columns:1fr; }
+  .services-strip{ padding:0 20px 40px; }
+  .services-grid{ grid-template-columns:1fr 1fr; }
+  footer{ flex-direction:column; gap:10px; text-align:center; padding:24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<script>
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  if (!token) window.location.href = "index.html";
+</script>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-brand">Distribution System</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Home</a>
+    <a href="vendors.html">Vendors</a>
+    <a href="products.html">Products</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+  <div class="nav-user">
+    <span class="dot"></span>
+    <span id="nav-username">User</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-blob"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      Kenya's Premier Distribution Network
+    </div>
+    <h1>Deliver Smarter,<br>Grow <span class="highlight">Faster</span></h1>
+    <p>Connect with top vendors across Kenya, browse thousands of products, and manage your orders — all in one place. Built for businesses that move fast.</p>
+    <div class="hero-actions">
+      <a href="vendors.html" class="btn-hero btn-primary">Browse Vendors</a>
+      <a href="products.html" class="btn-hero btn-outline">View Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Active Vendors</div>
+    <div class="stat-value green">6</div>
+    <div class="stat-sub">Across 6 cities</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Products Listed</div>
+    <div class="stat-value blue" id="stat-products">—</div>
+    <div class="stat-sub">Updated live</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Cities Covered</div>
+    <div class="stat-value">6</div>
+    <div class="stat-sub">Nairobi to Mombasa</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Delivery Services</div>
+    <div class="stat-value green">4</div>
+    <div class="stat-sub">Food, Gas & more</div>
+  </div>
+</div>
+
+<!-- FEATURED VENDORS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">Featured Vendors</div>
+    <a href="vendors.html" class="section-link">View all vendors &rarr;</a>
+  </div>
+  <div class="vendor-grid">
+    <div class="vendor-card">
+      <div class="vendor-top">
+        <div class="vendor-avatar">NB</div>
+        <span class="vendor-open">Open Now</span>
+      </div>
+      <div class="vendor-name">Vendor Nairobi</div>
+      <div class="vendor-loc">Nairobi CBD &mdash; 10am to 5pm</div>
+      <div class="vendor-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <button class="vendor-btn" onclick="window.location.href='vendors.html'">Select Vendor</button>
+    </div>
+    <div class="vendor-card">
+      <div class="vendor-top">
+        <div class="vendor-avatar">MB</div>
+        <span class="vendor-open">Open Now</span>
+      </div>
+      <div class="vendor-name">Vendor Mombasa</div>
+      <div class="vendor-loc">Mombasa Island &mdash; 24/7</div>
+      <div class="vendor-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+      <button class="vendor-btn" onclick="window.location.href='vendors.html'">Select Vendor</button>
+    </div>
+    <div class="vendor-card">
+      <div class="vendor-top">
+        <div class="vendor-avatar">EL</div>
+        <span class="vendor-open">Open Now</span>
+      </div>
+      <div class="vendor-name">Vendor Eldoret</div>
+      <div class="vendor-loc">Eldoret North &mdash; 7am to 9pm</div>
+      <div class="vendor-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <button class="vendor-btn" onclick="window.location.href='vendors.html'">Select Vendor</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT CATALOG -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">Product Catalog</div>
+    <a href="priices.html" class="section-link">View all products &rarr;</a>
+  </div>
+  <div class="product-grid" id="product-grid">
+    <div class="loading-msg">Loading products...</div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<div class="services-strip">
+  <div class="section-header">
+    <div class="section-title">Our Services</div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">&#127829;</div>
+      <div class="service-name">Food Delivery</div>
+      <div class="service-desc">Fresh meals delivered to your door within the hour</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">&#127866;</div>
+      <div class="service-name">Drink Delivery</div>
+      <div class="service-desc">Beverages and drinks delivered cold and fast</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">&#128293;</div>
+      <div class="service-name">Gas Delivery</div>
+      <div class="service-desc">Cooking gas cylinders refilled and delivered safely</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">&#11088;</div>
+      <div class="service-name">Custom Orders</div>
+      <div class="service-desc">Tailored bulk orders for businesses of any size</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Distribution System</div>
+  <div>© 2026 Distribution System. All rights reserved.</div>
+  <div>info@company.com &nbsp;|&nbsp; +254 700 000 000</div>
+</footer>
+
+<script>
+document.getElementById("nav-username").textContent = username || "User";
+
+async function loadProducts() {
+  const grid = document.getElementById("product-grid");
+  try {
+    const response = await fetch("http://localhost:8000/products/", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const products = await response.json();
+
+    if (!products.length) {
+      grid.innerHTML = "<div class='loading-msg'>No products available yet.</div>";
+      document.getElementById("stat-products").textContent = "0";
+      return;
+    }
+
+    document.getElementById("stat-products").textContent = products.length;
+
+    // Show first 8 products max on dashboard
+    grid.innerHTML = products.slice(0, 8).map(p => `
+      <div class="product-card">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.description}</div>
+        <div class="product-price">Ksh ${p.price.toLocaleString()}</div>
+        <button class="product-btn" onclick="alert('Order feature coming soon!')">Buy Now</button>
+      </div>
+    `).join("");
+
+  } catch(err) {
+    grid.innerHTML = "<div class='loading-msg'>Could not load products. Is the backend running?</div>";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  window.location.href = "index.html";
+}
+
+loadProducts();
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+        color: white;
+        background: 
+            linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+            url("shopping.jpg");
+        background-size: cover;
+        background-position: center;
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+
+    .button-container {
+        display: flex;
+        gap: 20px;
+    }
+
+    .btn {
+        text-decoration: none;
+        background-color: #007BFF;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    footer {
+        background-color: rgba(0,0,0,0.7);
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="main-content">
+    <h1>Welcome to Our Website</h1>
+    <p>Please login or register to continue</p>
+
+    <div class="button-container">
+        <a href="login.html" class="btn">LOGIN</a>
+        <a href="registration.html" class="btn">REGISTER</a>
+    </div>
+</div>
+
+<footer>
+    📧 Email: info@company.com | 📞 Phone: +254 700 000 000 <br>
+    © 2026 Company Name. All Rights Reserved.
+</footer>
+
+</body>
+</html>

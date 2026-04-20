@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Distribution System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+:root{
+  --primary:#2563eb; --accent:#22c55e;
+  --bg:#0f172a; --surface:#1e293b;
+  --card:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.08);
+  --text:#f1f5f9; --muted:#64748b; --muted-light:#94a3b8;
+}
+body{ background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+nav{ backdrop-filter:blur(16px); background:rgba(0,0,0,0.45); padding:18px 48px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--border); }
+.nav-brand{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--accent); }
+.nav-links a{ color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:500; transition:0.2s; margin-left:4px; }
+.nav-links a:hover{ color:var(--text); background:rgba(255,255,255,0.06); }
+.nav-user{ display:flex; align-items:center; gap:8px; padding:7px 14px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:50px; font-size:13px; color:var(--muted-light); }
+.dot{ width:7px; height:7px; background:var(--accent); border-radius:50%; animation:blink 2s infinite; }
+.page{ padding:48px; max-width:1100px; margin:0 auto; }
+.page-title{ font-family:'Syne',sans-serif; font-size:36px; font-weight:900; letter-spacing:-1px; margin-bottom:6px; }
+.page-sub{ color:var(--muted-light); font-size:15px; margin-bottom:36px; }
+.vendor-banner{ background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.25); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; margin-bottom:32px; }
+.vendor-avatar{ width:52px; height:52px; background:linear-gradient(135deg,#2563eb,#1d4ed8); border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:white; flex-shrink:0; }
+.vendor-info h3{ font-family:'Syne',sans-serif; font-size:17px; font-weight:700; }
+.vendor-info p{ color:var(--muted-light); font-size:13px; margin-top:3px; }
+.layout{ display:grid; grid-template-columns:1fr 380px; gap:28px; }
+.section-card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:28px; margin-bottom:24px; }
+.section-card h3{ font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:20px; }
+.form-group{ margin-bottom:18px; }
+.form-group label{ display:block; font-size:12px; color:var(--muted-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:7px; }
+.form-group input{ width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:var(--text); font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:0.3s; }
+.form-group input:focus{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,0.15); }
+.form-group input::placeholder{ color:var(--muted); }
+.products-list{ display:flex; flex-direction:column; gap:12px; }
+.product-row{ display:flex; align-items:center; gap:14px; padding:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; transition:0.2s; }
+.product-row:hover{ border-color:rgba(37,99,235,0.3); }
+.product-info{ flex:1; }
+.product-info .name{ font-weight:600; font-size:14px; }
+.product-info .price{ color:#22c55e; font-size:13px; margin-top:2px; font-family:'Syne',sans-serif; font-weight:700; }
+.qty-control{ display:flex; align-items:center; gap:8px; }
+.qty-btn{ width:30px; height:30px; border:1px solid var(--border); background:rgba(255,255,255,0.06); color:var(--text); border-radius:8px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; font-family:'DM Sans',sans-serif; }
+.qty-btn:hover{ background:rgba(37,99,235,0.2); border-color:var(--primary); }
+.qty-num{ width:32px; text-align:center; font-weight:600; font-size:14px; }
+.item-sub{ font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#94a3b8; min-width:70px; text-align:right; }
+.item-sub.active{ color:#22c55e; }
+/* ORDER SUMMARY */
+.summary-card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:28px; position:sticky; top:90px; }
+.summary-card h3{ font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:20px; }
+.summary-items{ margin-bottom:20px; max-height:300px; overflow-y:auto; }
+.summary-item{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; }
+.summary-item:last-child{ border-bottom:none; }
+.summary-item .s-name{ color:var(--muted-light); }
+.summary-item .s-price{ font-weight:600; color:var(--text); }
+.summary-empty{ text-align:center; color:var(--muted); font-size:13px; padding:20px 0; }
+.divider{ height:1px; background:var(--border); margin:16px 0; }
+.total-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.total-label{ font-size:14px; color:var(--muted-light); }
+.total-value{ font-family:'Syne',sans-serif; font-size:26px; font-weight:900; color:#22c55e; }
+.place-btn{ width:100%; padding:15px; border:none; border-radius:12px; background:linear-gradient(135deg,#22c55e,#16a34a); color:white; font-size:15px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:0.3s; }
+.place-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(34,197,94,0.35); }
+.place-btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+.loading-msg{ text-align:center; padding:40px; color:var(--muted); }
+/* SUCCESS OVERLAY */
+.success-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:200; display:none; align-items:center; justify-content:center; }
+.success-overlay.show{ display:flex; }
+.success-card{ background:#1e293b; border:1px solid rgba(34,197,94,0.3); border-radius:24px; padding:48px; text-align:center; max-width:420px; width:100%; animation:scaleIn 0.4s ease; }
+.success-icon{ font-size:56px; margin-bottom:20px; }
+.success-card h2{ font-family:'Syne',sans-serif; font-size:26px; font-weight:800; margin-bottom:10px; color:#22c55e; }
+.success-card p{ color:var(--muted-light); font-size:15px; margin-bottom:8px; }
+.success-id{ font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:var(--text); margin:16px 0; }
+.success-btns{ display:flex; gap:12px; margin-top:24px; }
+.btn-green{ flex:1; padding:13px; border:none; border-radius:12px; background:linear-gradient(135deg,#22c55e,#16a34a); color:white; font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:0.2s; }
+.btn-ghost{ flex:1; padding:13px; border:1px solid var(--border); border-radius:12px; background:none; color:var(--muted-light); font-size:14px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:0.2s; }
+.btn-ghost:hover{ background:rgba(255,255,255,0.06); color:var(--text); }
+/* STAR RATING */
+.rating-section{ margin:20px 0; }
+.rating-section p{ color:var(--muted-light); font-size:14px; margin-bottom:12px; }
+.stars-input{ display:flex; justify-content:center; gap:8px; margin-bottom:16px; }
+.star-btn{ font-size:36px; background:none; border:none; cursor:pointer; color:#334155; transition:0.15s; padding:0; line-height:1; }
+.star-btn:hover, .star-btn.active{ color:#facc15; transform:scale(1.15); }
+.rating-feedback{ font-size:13px; color:var(--muted-light); margin-bottom:12px; min-height:20px; }
+.btn-rate{ width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(135deg,#facc15,#f59e0b); color:#0f172a; font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:0.2s; margin-bottom:8px; }
+.btn-rate:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(245,158,11,0.35); }
+.btn-rate:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+.rating-done{ color:#22c55e; font-size:14px; font-weight:600; display:none; margin-bottom:8px; }
+.divider-line{ height:1px; background:rgba(255,255,255,0.08); margin:20px 0; }
+
+@keyframes scaleIn{ from{ opacity:0; transform:scale(0.9); } to{ opacity:1; transform:scale(1); } }
+@media(max-width:768px){ .page{ padding:20px; } .layout{ grid-template-columns:1fr; } nav{ padding:15px 20px; } }
+</style>
+</head>
+<body>
+<script>
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+if (!token) window.location.href = "index.html";
+</script>
+
+<nav>
+  <div class="nav-brand">Distribution System</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Home</a>
+    <a href="vendors.html">Vendors</a>
+    <a href="priices.html">Products</a>
+    <a href="orders.html">My Orders</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+  <div class="nav-user"><span class="dot"></span><span id="nav-username">User</span></div>
+</nav>
+
+<div class="page">
+  <div class="page-title">Checkout</div>
+  <div class="page-sub">Place your order through your selected vendor</div>
+
+  <div class="vendor-banner" id="vendor-banner">
+    <div class="vendor-avatar" id="vendor-initials">--</div>
+    <div class="vendor-info">
+      <h3 id="vendor-name">Loading vendor...</h3>
+      <p id="vendor-detail">Please wait</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <!-- PRODUCTS -->
+      <div class="section-card">
+        <h3>Select Products</h3>
+        <div class="products-list" id="products-list">
+          <div class="loading-msg">Loading products...</div>
+        </div>
+      </div>
+
+      <!-- DELIVERY DETAILS -->
+      <div class="section-card">
+        <h3>Delivery Details</h3>
+        <div class="form-group">
+          <label>Delivery Address</label>
+          <input type="text" id="delivery-address" placeholder="e.g. 123 Kenyatta Ave, Nairobi">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="phone" placeholder="e.g. +254 700 000 000">
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div>
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="summary-items" id="summary-items">
+          <div class="summary-empty">No items selected yet</div>
+        </div>
+        <div class="divider"></div>
+        <div class="total-row">
+          <div class="total-label">Total</div>
+          <div class="total-value" id="total-price">Ksh 0</div>
+        </div>
+        <button class="place-btn" id="place-btn" onclick="placeOrder()">Place Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon">&#10003;</div>
+    <h2>Order Placed!</h2>
+    <p>Your order has been received and is being processed.</p>
+    <div class="success-id" id="success-order-id">Order #—</div>
+    <p style="font-size:13px;">Your vendor will contact you shortly at the number provided.</p>
+
+    <div class="divider-line"></div>
+
+    <!-- RATING WIDGET -->
+    <div class="rating-section">
+      <p>How would you rate <strong id="rate-vendor-name">this vendor</strong>?</p>
+      <div class="stars-input" id="stars-input">
+        <button class="star-btn" onclick="setRating(1)">&#9733;</button>
+        <button class="star-btn" onclick="setRating(2)">&#9733;</button>
+        <button class="star-btn" onclick="setRating(3)">&#9733;</button>
+        <button class="star-btn" onclick="setRating(4)">&#9733;</button>
+        <button class="star-btn" onclick="setRating(5)">&#9733;</button>
+      </div>
+      <div class="rating-feedback" id="rating-feedback"></div>
+      <div class="rating-done" id="rating-done">&#10003; Rating submitted — thank you!</div>
+      <button class="btn-rate" id="rate-btn" onclick="submitRating()" disabled>Submit Rating</button>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="success-btns">
+      <button class="btn-green" onclick="window.location.href='orders.html'">View My Orders</button>
+      <button class="btn-ghost" onclick="window.location.href='dashboard.html'">Back Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("nav-username").textContent = username || "User";
+
+const params = new URLSearchParams(window.location.search);
+const vendorId = params.get("vendor_id");
+const vendorName = params.get("vendor_name") || "Selected Vendor";
+const vendorInitials = params.get("vendor_initials") || "VN";
+const vendorLocation = params.get("vendor_location") || "";
+
+if (!vendorId) window.location.href = "vendors.html";
+
+document.getElementById("vendor-name").textContent = vendorName;
+document.getElementById("vendor-initials").textContent = vendorInitials;
+document.getElementById("vendor-detail").textContent = vendorLocation;
+
+let allProducts = [];
+let quantities = {};
+
+async function loadProducts() {
+  try {
+    const res = await fetch("http://localhost:8000/products/", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    allProducts = await res.json();
+
+    if (!allProducts.length) {
+      document.getElementById("products-list").innerHTML = "<div class='loading-msg'>No products available.</div>";
+      return;
+    }
+
+    allProducts.forEach(p => quantities[p.id] = 0);
+    renderProductList();
+  } catch {
+    document.getElementById("products-list").innerHTML = "<div class='loading-msg'>Could not load products.</div>";
+  }
+}
+
+function renderProductList() {
+  document.getElementById("products-list").innerHTML = allProducts.map(p => `
+    <div class="product-row">
+      <div class="product-info">
+        <div class="name">${p.name}</div>
+        <div class="price">Ksh ${p.price.toLocaleString()}</div>
+      </div>
+      <div class="qty-control">
+        <button class="qty-btn" onclick="changeQty(${p.id}, -1)">&#8722;</button>
+        <div class="qty-num" id="qty-${p.id}">0</div>
+        <button class="qty-btn" onclick="changeQty(${p.id}, 1)">&#43;</button>
+      </div>
+      <div class="item-sub" id="sub-${p.id}">Ksh 0</div>
+    </div>
+  `).join("");
+}
+
+function changeQty(productId, delta) {
+  quantities[productId] = Math.max(0, (quantities[productId] || 0) + delta);
+  const qty = quantities[productId];
+  document.getElementById(`qty-${productId}`).textContent = qty;
+  const product = allProducts.find(p => p.id === productId);
+  const sub = product.price * qty;
+  const subEl = document.getElementById(`sub-${productId}`);
+  subEl.textContent = "Ksh " + sub.toLocaleString();
+  subEl.className = "item-sub" + (qty > 0 ? " active" : "");
+  updateSummary();
+}
+
+function updateSummary() {
+  const selected = allProducts.filter(p => quantities[p.id] > 0);
+  const summaryEl = document.getElementById("summary-items");
+  let total = 0;
+
+  if (!selected.length) {
+    summaryEl.innerHTML = "<div class='summary-empty'>No items selected yet</div>";
+    document.getElementById("total-price").textContent = "Ksh 0";
+    return;
+  }
+
+  summaryEl.innerHTML = selected.map(p => {
+    const sub = p.price * quantities[p.id];
+    total += sub;
+    return `
+      <div class="summary-item">
+        <span class="s-name">${p.name} x${quantities[p.id]}</span>
+        <span class="s-price">Ksh ${sub.toLocaleString()}</span>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("total-price").textContent = "Ksh " + total.toLocaleString();
+}
+
+async function placeOrder() {
+  const address = document.getElementById("delivery-address").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!address || !phone) {
+    alert("Please fill in your delivery address and phone number."); return;
+  }
+
+  const items = allProducts
+    .filter(p => quantities[p.id] > 0)
+    .map(p => ({ product_id: p.id, quantity: quantities[p.id] }));
+
+  if (!items.length) {
+    alert("Please select at least one product."); return;
+  }
+
+  const btn = document.getElementById("place-btn");
+  btn.disabled = true;
+  btn.textContent = "Placing order...";
+
+  try {
+    const res = await fetch("http://localhost:8000/orders/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ vendor_id: parseInt(vendorId), delivery_address: address, phone, items })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById("success-order-id").textContent = `Order #${data.id}`;
+      document.getElementById("rate-vendor-name").textContent = vendorName;
+      document.getElementById("success-overlay").classList.add("show");
+    } else {
+      alert(data.detail || "Failed to place order.");
+      btn.disabled = false;
+      btn.textContent = "Place Order";
+    }
+  } catch {
+    alert("Could not connect to server.");
+    btn.disabled = false;
+    btn.textContent = "Place Order";
+  }
+}
+
+// ── RATING ──
+let selectedRating = 0;
+const ratingLabels = ["", "Poor", "Fair", "Good", "Very Good", "Excellent"];
+
+function setRating(val) {
+  selectedRating = val;
+  const stars = document.querySelectorAll(".star-btn");
+  stars.forEach((s, i) => {
+    s.classList.toggle("active", i < val);
+  });
+  document.getElementById("rating-feedback").textContent = ratingLabels[val];
+  document.getElementById("rate-btn").disabled = false;
+}
+
+async function submitRating() {
+  if (!selectedRating) return;
+  const btn = document.getElementById("rate-btn");
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  try {
+    const res = await fetch(`http://localhost:8000/vendors/${vendorId}/rate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ rating: selectedRating })
+    });
+
+    if (res.ok) {
+      document.getElementById("rate-btn").style.display = "none";
+      document.getElementById("stars-input").style.pointerEvents = "none";
+      document.getElementById("rating-done").style.display = "block";
+      document.getElementById("rating-feedback").textContent = `You rated ${ratingLabels[selectedRating]}`;
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Submit Rating";
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = "Submit Rating";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  window.location.href = "index.html";
+}
+
+loadProducts();
+</script>
+</body>
+</html>

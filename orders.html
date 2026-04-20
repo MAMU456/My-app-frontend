@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders | Distribution System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+:root{
+  --primary:#2563eb; --accent:#22c55e;
+  --bg:#0f172a; --surface:#1e293b;
+  --card:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.08);
+  --text:#f1f5f9; --muted:#64748b; --muted-light:#94a3b8;
+}
+body{ background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+nav{ backdrop-filter:blur(16px); background:rgba(0,0,0,0.45); padding:18px 48px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; border-bottom:1px solid var(--border); }
+.nav-brand{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--accent); }
+.nav-links a{ color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:500; transition:0.2s; margin-left:4px; }
+.nav-links a:hover{ color:var(--text); background:rgba(255,255,255,0.06); }
+.nav-links a.active{ color:var(--accent); }
+.nav-user{ display:flex; align-items:center; gap:8px; padding:7px 14px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:50px; font-size:13px; color:var(--muted-light); }
+.dot{ width:7px; height:7px; background:var(--accent); border-radius:50%; animation:blink 2s infinite; }
+.page{ padding:48px; max-width:900px; margin:0 auto; }
+.page-title{ font-family:'Syne',sans-serif; font-size:36px; font-weight:900; letter-spacing:-1px; margin-bottom:6px; }
+.page-sub{ color:var(--muted-light); font-size:15px; margin-bottom:36px; }
+.order-card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:24px; margin-bottom:20px; transition:0.3s; animation:fadeUp 0.4s ease both; }
+.order-card:hover{ border-color:rgba(37,99,235,0.3); }
+.order-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+.order-id{ font-family:'Syne',sans-serif; font-size:18px; font-weight:800; }
+.order-date{ font-size:12px; color:var(--muted); margin-top:3px; }
+.status-badge{ padding:5px 14px; border-radius:50px; font-size:12px; font-weight:700; }
+.status-pending{ background:rgba(234,179,8,0.12); color:#fbbf24; border:1px solid rgba(234,179,8,0.3); }
+.status-confirmed{ background:rgba(37,99,235,0.12); color:#60a5fa; border:1px solid rgba(37,99,235,0.3); }
+.status-delivered{ background:rgba(34,197,94,0.12); color:#22c55e; border:1px solid rgba(34,197,94,0.3); }
+.status-cancelled{ background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.25); }
+.order-meta{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px; }
+.meta-item .label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.meta-item .value{ font-size:14px; color:var(--text); font-weight:500; }
+.order-items{ border-top:1px solid var(--border); padding-top:14px; }
+.order-item-row{ display:flex; justify-content:space-between; padding:7px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); }
+.order-item-row:last-child{ border-bottom:none; }
+.item-name-col{ color:var(--muted-light); }
+.item-price-col{ color:var(--text); font-weight:600; }
+.order-total{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.order-total .label{ color:var(--muted-light); font-size:14px; }
+.order-total .value{ font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#22c55e; }
+.empty-state{ text-align:center; padding:80px 20px; color:var(--muted); }
+.empty-state .icon{ font-size:50px; margin-bottom:16px; }
+.empty-state p{ font-size:15px; margin-bottom:24px; }
+.empty-state a{ display:inline-block; padding:13px 28px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:white; text-decoration:none; border-radius:12px; font-weight:600; font-size:14px; transition:0.2s; }
+.empty-state a:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(37,99,235,0.35); }
+@keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+@media(max-width:768px){ .page{ padding:20px; } nav{ padding:15px 20px; } .order-meta{ grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<script>
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+if (!token) window.location.href = "index.html";
+</script>
+
+<nav>
+  <div class="nav-brand">Distribution System</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Home</a>
+    <a href="vendors.html">Vendors</a>
+    <a href="priices.html">Products</a>
+    <a href="orders.html" class="active">My Orders</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+  <div class="nav-user"><span class="dot"></span><span id="nav-username">User</span></div>
+</nav>
+
+<div class="page">
+  <div class="page-title">My Orders</div>
+  <div class="page-sub">Track all your orders and their status</div>
+  <div id="orders-container"><div class="empty-state"><div class="icon">&#128230;</div><p>Loading your orders...</p></div></div>
+</div>
+
+<script>
+document.getElementById("nav-username").textContent = username || "User";
+
+function statusClass(s){ return `status-${s}`; }
+function statusLabel(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+async function loadOrders() {
+  const container = document.getElementById("orders-container");
+  try {
+    const res = await fetch("http://localhost:8000/orders/my", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const orders = await res.json();
+
+    if (!orders.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">&#128230;</div>
+          <p>You haven't placed any orders yet.</p>
+          <a href="vendors.html">Browse Vendors</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map((o, i) => `
+      <div class="order-card" style="animation-delay:${i * 0.07}s">
+        <div class="order-header">
+          <div>
+            <div class="order-id">Order #${o.id}</div>
+            <div class="order-date">${new Date(o.created_at).toLocaleString()}</div>
+          </div>
+          <span class="status-badge ${statusClass(o.status)}">${statusLabel(o.status)}</span>
+        </div>
+        <div class="order-meta">
+          <div class="meta-item">
+            <div class="label">Delivery Address</div>
+            <div class="value">${o.delivery_address}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">Phone</div>
+            <div class="value">${o.phone}</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">Items</div>
+            <div class="value">${o.items.length} product${o.items.length !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="order-items">
+          ${o.items.map(item => `
+            <div class="order-item-row">
+              <span class="item-name-col">${item.product_name} &times; ${item.quantity}</span>
+              <span class="item-price-col">Ksh ${item.subtotal.toLocaleString()}</span>
+            </div>
+          `).join("")}
+        </div>
+        <div class="order-total">
+          <span class="label">Total Paid</span>
+          <span class="value">Ksh ${o.total_price.toLocaleString()}</span>
+        </div>
+      </div>
+    `).join("");
+
+  } catch {
+    container.innerHTML = `<div class="empty-state"><div class="icon">&#9888;</div><p>Could not load orders. Is the backend running?</p></div>`;
+  }
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  window.location.href = "index.html";
+}
+
+loadOrders();
+</script>
+</body>
+</html>
