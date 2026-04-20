@@ -735,7 +735,7 @@ document.getElementById("nav-username").textContent = username || "User";
 async function loadProducts() {
   const grid = document.getElementById("product-grid");
   try {
-    const response = await fetch("${API}/products/", {
+    const response = await fetch(`${API}/products/`, {
       headers: { "Authorization": "Bearer " + token }
     });
     const products = await response.json();

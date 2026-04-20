@@ -708,7 +708,7 @@ function renderProducts(list){
 async function loadPrices(){
   const stateMsg = document.getElementById("state-msg");
   try {
-    const response = await fetch("${API}/products/", {
+    const response = await fetch(`${API}/products/`, {
       headers: { "Authorization": "Bearer " + token }
     });
     allProducts = await response.json();

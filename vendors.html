@@ -644,7 +644,7 @@ function starsHTML(rating){
 
 async function loadVendors(){
   try {
-    const res = await fetch("${API}/vendors/");
+    const res = await fetch(`${API}/vendors/`);
     allVendors = await res.json();
     renderVendors(allVendors);
   } catch(err) {

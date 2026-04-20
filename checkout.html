@@ -222,7 +222,7 @@ let quantities = {};
 
 async function loadProducts() {
   try {
-    const res = await fetch("${API}/products/", {
+    const res = await fetch(`${API}/products/`, {
       headers: { "Authorization": "Bearer " + token }
     });
     allProducts = await res.json();
@@ -314,7 +314,7 @@ async function placeOrder() {
   btn.textContent = "Placing order...";
 
   try {
-    const res = await fetch("${API}/orders/", {
+    const res = await fetch(`${API}/orders/`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
       body: JSON.stringify({ vendor_id: parseInt(vendorId), delivery_address: address, phone, items })
