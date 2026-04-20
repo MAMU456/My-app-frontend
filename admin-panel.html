@@ -164,7 +164,6 @@ tr:hover td{ background:rgba(255,255,255,0.02); }
 
 <!-- Auth check -->
 <script>
-const API = https://my-app-backend-qb9r.onrender.com
 const adminToken = localStorage.getItem("admin_token");
 const adminUsername = localStorage.getItem("admin_username");
 if (!adminToken) window.location.href = "admin-login.html";
@@ -354,7 +353,7 @@ if (!adminToken) window.location.href = "admin-login.html";
 <div class="toast" id="toast"></div>
 
 <script>
-const API = https://my-app-backend-qb9r.onrender.com
+const API = "https://my-app-backend-qb9r.onrender.com"
 const headers = () => ({
   "Authorization": "Bearer " + adminToken,
   "Content-Type": "application/json"

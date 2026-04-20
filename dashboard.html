@@ -729,7 +729,7 @@ footer{
 </footer>
 
 <script>
-const API = https://my-app-backend-qb9r.onrender.com
+const API = "https://my-app-backend-qb9r.onrender.com"
 document.getElementById("nav-username").textContent = username || "User";
 
 async function loadProducts() {
@@ -754,7 +754,7 @@ async function loadProducts() {
         <div class="product-name">${p.name}</div>
         <div class="product-desc">${p.description}</div>
         <div class="product-price">Ksh ${p.price.toLocaleString()}</div>
-        <button class="product-btn" onclick="alert('Order feature coming soon!')">Buy Now</button>
+        <button class="product-btn" onclick="window.location.href='vendors.html')">Buy Now</button>
       </div>
     `).join("");
 
