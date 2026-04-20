@@ -24,6 +24,7 @@ button:hover { background: #0056b3; transform: translateY(-2px); }
 <body>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 async function registerUser(event) {
   event.preventDefault();
 
@@ -44,7 +45,7 @@ async function registerUser(event) {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/auth/register",  {
+    const response = await fetch("${API}/auth/register",  {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password })

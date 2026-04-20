@@ -37,6 +37,7 @@ button:disabled { background: #93c5fd; cursor: not-allowed; }
 </div>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 let isLogin = true;
 
 function toggleForm() {
@@ -72,7 +73,7 @@ async function handleAuth() {
   if (isLogin) {
     // LOGIN — must send as form data, not JSON
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+      const response = await fetch("${API}/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ username, password })
@@ -121,7 +122,7 @@ async function handleAuth() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/register", {
+      const response = await fetch("${API}/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })

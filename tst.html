@@ -280,6 +280,7 @@ if (!token) {
 </footer>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 document.getElementById("nav-username").textContent = username || "User";
 
 function filterVendors(){
@@ -304,7 +305,7 @@ function logout(){
 async function loadProducts(){
     const grid = document.getElementById("product-grid");
     try {
-       const response = await fetch("http://localhost:8000/products/", {
+       const response = await fetch("${API}/products/", {
             headers: { "Authorization": "Bearer " + token }
         });
         const products = await response.json();

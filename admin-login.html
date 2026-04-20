@@ -44,6 +44,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 </div>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 // Redirect if already logged in as admin
 if (localStorage.getItem("admin_token")) {
   window.location.href = "admin-panel.html";
@@ -67,7 +68,7 @@ async function adminLogin() {
   btn.textContent = "Authenticating...";
 
   try {
-    const response = await fetch("http://localhost:8000/admin/login", {
+    const response = await fetch("${API}/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ username, password })

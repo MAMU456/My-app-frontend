@@ -636,6 +636,7 @@ footer{
 </footer>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 document.getElementById("nav-username").textContent = username || "User";
 
 let allProducts = [];
@@ -707,7 +708,7 @@ function renderProducts(list){
 async function loadPrices(){
   const stateMsg = document.getElementById("state-msg");
   try {
-    const response = await fetch("http://localhost:8000/products/", {
+    const response = await fetch("${API}/products/", {
       headers: { "Authorization": "Bearer " + token }
     });
     allProducts = await response.json();

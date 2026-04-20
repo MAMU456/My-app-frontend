@@ -629,6 +629,7 @@ footer{
 <div class="toast" id="toast"></div>
 
 <script>
+const API = https://my-app-backend-qb9r.onrender.com
 document.getElementById("nav-username").textContent = username || "User";
 
 let allVendors = [];
@@ -643,7 +644,7 @@ function starsHTML(rating){
 
 async function loadVendors(){
   try {
-    const res = await fetch("http://localhost:8000/vendors/");
+    const res = await fetch("${API}/vendors/");
     allVendors = await res.json();
     renderVendors(allVendors);
   } catch(err) {
