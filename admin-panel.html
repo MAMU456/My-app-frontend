@@ -354,11 +354,13 @@ if (!adminToken) window.location.href = "admin-login.html";
 
 <script>
 const API = "https://my-app-backend-qb9r.onrender.com"
-const headers = () => ({
-  "Authorization": "Bearer " + localStorage.getItem("admin_token"),
-  "Content-Type": "application/json"
-});
-
+const headers = () => {
+  const token = localStorage.getItem("admin_token");
+  return {
+    "Authorization": "Bearer " + token,
+    "Content-Type": "application/json"
+  };
+};
 let editingProductId = null;
 
 // Init
