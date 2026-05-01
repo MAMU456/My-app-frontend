@@ -354,7 +354,7 @@ if (!adminToken) window.location.href = "admin-login.html";
 
 <script>
 const API = "https://my-app-backend-qb9r.onrender.com"
-const res = await fetch(`${API}/products/`);
+
 const headers = () => {
   const token = localStorage.getItem("admin_token");
   return {
